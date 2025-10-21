@@ -35,3 +35,108 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/**
+ * Estilos personalizados para diálogos biométricos
+ * -----------------------------------------------------
+ */
+.biometric-alert {
+  --background: var(--ion-background-color, #fff);
+  --min-width: 280px;
+  --max-width: 340px;
+
+  .alert-wrapper {
+    background: var(--ion-background-color, #fff);
+    border-radius: 14px;
+  }
+
+  .alert-head {
+    padding: 20px 16px 0;
+    text-align: center;
+
+    h2 {
+      color: var(--ion-text-color, #000);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    h3 {
+      color: var(--ion-color-medium, #666);
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  .alert-message {
+    padding: 16px;
+    color: var(--ion-text-color, #000);
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+
+    p {
+      margin: 8px 0;
+      color: var(--ion-text-color, #000);
+    }
+
+    strong {
+      color: var(--ion-color-primary, #3880ff);
+      font-weight: 500;
+    }
+  }
+
+  .alert-button-group {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+
+    button {
+      flex: 1;
+      margin: 0 4px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: none;
+
+      &.secondary {
+        color: var(--ion-color-medium, #666);
+      }
+
+      &.primary {
+        color: var(--ion-color-primary, #3880ff);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Estilos para modo oscuro
+@media (prefers-color-scheme: dark) {
+  .biometric-alert {
+    --background: var(--ion-background-color, #1e1e1e);
+
+    .alert-wrapper {
+      background: var(--ion-background-color, #1e1e1e);
+    }
+
+    .alert-head {
+      h2 {
+        color: var(--ion-text-color, #fff);
+      }
+
+      h3 {
+        color: var(--ion-color-medium, #aaa);
+      }
+    }
+
+    .alert-message {
+      color: var(--ion-text-color, #fff);
+
+      p {
+        color: var(--ion-text-color, #fff);
+      }
+    }
+  }
+}
+
