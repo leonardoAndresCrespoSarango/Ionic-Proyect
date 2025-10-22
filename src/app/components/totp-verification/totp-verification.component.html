@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Verificación de Dos Factores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="totp-container">
+    <div class="icon-container">
+      <ion-icon name="shield-checkmark" color="primary"></ion-icon>
+    </div>
+
+    <h2>Autenticación de Dos Factores</h2>
+    <p class="description">
+      Ingresa el código de 6 dígitos generado por tu aplicación de autenticación
+      (Google Authenticator, Microsoft Authenticator, etc.)
+    </p>
+
+    <ion-item class="code-input">
+      <ion-input
+        type="text"
+        inputmode="numeric"
+        [(ngModel)]="totpCode"
+        (ionInput)="onCodeInput($event)"
+        placeholder="000000"
+        maxlength="6"
+        [disabled]="isLoading"
+      ></ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      (click)="verifyCode()"
+      [disabled]="totpCode.length !== 6 || isLoading"
+      class="verify-button"
+    >
+      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+      <span *ngIf="!isLoading">Verificar Código</span>
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="clear"
+      (click)="cancel()"
+      [disabled]="isLoading"
+    >
+      Cancelar
+    </ion-button>
+  </div>
+</ion-content>
+

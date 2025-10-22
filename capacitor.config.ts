@@ -6,11 +6,13 @@ const config: CapacitorConfig = {
   webDir: 'www',
   server: {
     cleartext: true,
-    allowNavigation: ['*']
+    allowNavigation: ['*'],
+    androidScheme: 'https'
   },
   android: {
     allowMixedContent: true,
-    captureInput: true
+    captureInput: true,
+    webContentsDebuggingEnabled: true
   },
   plugins: {
     CapacitorHttp: {

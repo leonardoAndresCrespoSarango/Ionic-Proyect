@@ -12,11 +12,13 @@ import {
   IonButton,
   IonIcon,
   IonText,
-  IonSpinner
+  IonSpinner,
+  ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { fingerPrint } from 'ionicons/icons';
 import { BiometricSetupDialogComponent } from '../biometric-setup-dialog/biometric-setup-dialog.component';
+import { TotpVerificationComponent } from '../totp-verification/totp-verification.component';
 
 @Component({
   selector: 'app-login',
@@ -35,177 +37,8 @@ import { BiometricSetupDialogComponent } from '../biometric-setup-dialog/biometr
     IonSpinner,
     BiometricSetupDialogComponent
   ],
-  template: `
-    <ion-content class="login-content">
-      <div class="login-container">
-        <div class="logo-section">
-          <h1>ETIKOS</h1>
-          <p>Iniciar Sesión</p>
-        </div>
-
-        <!-- Login biométrico -->
-        <div class="biometric-section" *ngIf="biometricState.canUseForLogin">
-          <ion-button
-            expand="full"
-            color="primary"
-            (click)="loginWithBiometric()"
-            [disabled]="loading"
-            class="biometric-btn">
-            <ion-icon name="finger-print" slot="start"></ion-icon>
-            Iniciar con Huella
-          </ion-button>
-          <div class="divider">
-            <span>o</span>
-          </div>
-        </div>
-
-        <!-- Login tradicional -->
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <ion-item>
-            <ion-label position="stacked">Email</ion-label>
-            <ion-input
-              type="email"
-              formControlName="email"
-              placeholder="Ingresa tu email">
-            </ion-input>
-          </ion-item>
-          <div *ngIf="email?.invalid && email?.touched" class="error-message">
-            <ion-text color="danger">Email es requerido</ion-text>
-          </div>
-
-          <ion-item>
-            <ion-label position="stacked">Contraseña</ion-label>
-            <ion-input
-              type="password"
-              formControlName="password"
-              placeholder="Ingresa tu contraseña">
-            </ion-input>
-          </ion-item>
-          <div *ngIf="password?.invalid && password?.touched" class="error-message">
-            <ion-text color="danger">Contraseña es requerida</ion-text>
-          </div>
-
-          <div *ngIf="errorMessage" class="error-alert">
-            <ion-text color="danger">{{ errorMessage }}</ion-text>
-          </div>
-
-          <ion-button
-            type="submit"
-            expand="full"
-            [disabled]="loginForm.invalid || loading"
-            class="login-btn">
-            <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
-            {{ loading ? 'Cargando...' : 'Iniciar Sesión' }}
-          </ion-button>
-        </form>
-      </div>
-
-      <!-- Diálogo de configuración biométrica -->
-      <app-biometric-setup-dialog
-        [isOpen]="showBiometricDialog"
-        [userCredentials]="pendingCredentials"
-        (biometricActivated)="onBiometricActivated()"
-        (dialogDismissed)="onBiometricDialogDismissed()">
-      </app-biometric-setup-dialog>
-    </ion-content>
-  `,
-  styles: [`
-    .login-content {
-      --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    .login-container {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .logo-section {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    .logo-section h1 {
-      color: white;
-      font-size: 2.5rem;
-      font-weight: bold;
-      margin: 0;
-    }
-    .logo-section p {
-      color: rgba(255,255,255,0.8);
-      font-size: 1.1rem;
-      margin: 5px 0 0 0;
-    }
-    .biometric-section {
-      margin-bottom: 20px;
-    }
-    .biometric-btn {
-      --background: rgba(255,255,255,0.1);
-      --border-radius: 12px;
-      --color: white;
-      margin-bottom: 10px;
-    }
-    .divider {
-      text-align: center;
-      position: relative;
-      margin: 20px 0;
-    }
-    .divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: rgba(255,255,255,0.3);
-    }
-    .divider span {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: rgba(255,255,255,0.8);
-      padding: 0 15px;
-      position: relative;
-    }
-    ion-item {
-      --background: rgba(255,255,255,0.1);
-      --border-radius: 12px;
-      --color: white;
-      margin-bottom: 15px;
-    }
-    ion-label {
-      --color: rgba(255,255,255,0.9) !important;
-    }
-    ion-input {
-      --color: white !important;
-      --placeholder-color: rgba(255,255,255,0.6) !important;
-    }
-    .error-message {
-      margin: -10px 0 15px 15px;
-    }
-    .error-alert {
-      background: rgba(244, 67, 54, 0.1);
-      border: 1px solid rgba(244, 67, 54, 0.3);
-      border-radius: 8px;
-      padding: 10px;
-      margin: 15px 0;
-      text-align: center;
-    }
-    .login-btn {
-      --background: rgba(255,255,255,0.2);
-      --border-radius: 12px;
-      --color: white;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    .checkbox-label {
-      margin-left: 10px;
-      font-size: 0.9rem;
-    }
-    .additional-options {
-      text-align: center;
-      margin-top: 20px;
-    }
-  `]
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   @ViewChild(BiometricSetupDialogComponent) biometricDialog!: BiometricSetupDialogComponent;
@@ -213,6 +46,7 @@ export class LoginComponent implements OnInit {
   // Usar inject() en lugar de constructor injection
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private modalCtrl = inject(ModalController);
   private biometricService = inject(BiometricService);
   private router = inject(Router);
 
@@ -295,8 +129,50 @@ export class LoginComponent implements OnInit {
       console.log('🔐 Intentando login tradicional...');
 
       // Hacer login
-      await this.authService.login(loginData).toPromise();
-      console.log('✅ Login exitoso');
+      const response = await this.authService.login(loginData).toPromise();
+
+      // Verificar si requiere TOTP
+      if (response && response.totpRequired && response.tempSessionId) {
+        console.log('🔑 TOTP requerido, abriendo modal de verificación...');
+        this.loading = false;
+
+        // Abrir modal de verificación TOTP
+        const modal = await this.modalCtrl.create({
+          component: TotpVerificationComponent,
+          componentProps: {
+            tempSessionId: response.tempSessionId
+          },
+          backdropDismiss: false
+        });
+
+        await modal.present();
+
+        const { data } = await modal.onWillDismiss();
+
+        if (data && data.success) {
+          console.log('✅ Verificación TOTP exitosa');
+          // Actualizar estado biométrico
+          await this.updateBiometricState();
+
+          // Verificar si debe mostrar el diálogo biométrico
+          if (this.biometricState.canSaveCredentials) {
+            console.log('💡 Mostrando diálogo de configuración biométrica...');
+            this.pendingCredentials = {
+              email: loginData.email,
+              password: loginData.password
+            };
+            this.showBiometricDialog = true;
+          } else {
+            console.log('🚀 Redirigiendo al dashboard...');
+            this.router.navigate(['/dashboard']);
+          }
+        } else {
+          this.errorMessage = 'Verificación TOTP cancelada';
+        }
+        return;
+      }
+
+      console.log('✅ Login exitoso sin TOTP');
 
       // Actualizar estado biométrico
       await this.updateBiometricState();
@@ -310,19 +186,6 @@ export class LoginComponent implements OnInit {
         };
         this.showBiometricDialog = true;
       } else {
-        // Si no puede o no debe mostrar el diálogo, redirigir directamente
-        console.log('🚀 Redirigiendo al dashboard...');
-        this.router.navigate(['/dashboard']);
-      }
-      if (this.biometricState.canSaveCredentials) {
-        console.log('💡 Mostrando diálogo de configuración biométrica...');
-        this.pendingCredentials = {
-          email: loginData.email,
-          password: loginData.password
-        };
-        this.showBiometricDialog = true;
-      } else {
-        // Si no puede o no debe mostrar el diálogo, redirigir directamente
         console.log('🚀 Redirigiendo al dashboard...');
         this.router.navigate(['/dashboard']);
       }
@@ -362,7 +225,34 @@ export class LoginComponent implements OnInit {
       console.log('🔐 Haciendo login con credenciales biométricas...');
 
       // Hacer login con las credenciales obtenidas
-      await this.authService.login(credentials).toPromise();
+      const response = await this.authService.login(credentials).toPromise();
+
+      // Verificar si requiere TOTP
+      if (response && response.totpRequired && response.tempSessionId) {
+        console.log('🔑 TOTP requerido después de biometría, abriendo modal...');
+        this.loading = false;
+
+        // Abrir modal de verificación TOTP
+        const modal = await this.modalCtrl.create({
+          component: TotpVerificationComponent,
+          componentProps: {
+            tempSessionId: response.tempSessionId
+          },
+          backdropDismiss: false
+        });
+
+        await modal.present();
+
+        const { data } = await modal.onWillDismiss();
+
+        if (data && data.success) {
+          console.log('✅ Verificación TOTP exitosa después de biometría');
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.errorMessage = 'Verificación TOTP cancelada';
+        }
+        return;
+      }
 
       console.log('✅ Login biométrico integrado exitoso');
       this.router.navigate(['/dashboard']);

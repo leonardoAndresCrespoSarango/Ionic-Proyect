@@ -6,6 +6,7 @@ export interface User {
   lastname: string;
   role: 'CUSTOMER' | 'ADMIN';
   biometricEnabled: boolean;
+  totpEnabled: boolean;
 }
 
 export interface LoginRequest {
@@ -22,8 +23,10 @@ export interface RegisterRequest {
 }
 
 export interface LoginResponse {
-  token: string;
+  token?: string;
   user: User;
+  totpRequired: boolean;
+  tempSessionId?: string;
 }
 
 export interface BiometricPreferenceRequest {
@@ -32,5 +35,27 @@ export interface BiometricPreferenceRequest {
 
 export interface BiometricPreferenceResponse {
   enabled: boolean;
+}
+
+export interface TotpSetupResponse {
+  secret: string;
+  qrCodeDataUri: string;
+}
+
+export interface TotpVerifyRequest {
+  code: string;
+}
+
+export interface TotpVerifyResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface TotpStatusResponse {
+  totpEnabled: boolean;
+}
+
+export interface TotpLoginRequest {
+  code: string;
 }
 

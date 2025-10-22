@@ -1,0 +1,23 @@
+<div class="minimal-login-container">
+  <h3>Login</h3>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <input
+      type="email"
+      formControlName="email"
+      placeholder="Email"
+      class="input-field">
+    <input
+      type="password"
+      formControlName="password"
+      placeholder="Contraseña"
+      class="input-field">
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    <button
+      type="submit"
+      [disabled]="loginForm.invalid || loading"
+      class="submit-button">
+      {{ loading ? 'Cargando...' : 'Entrar' }}
+    </button>
+  </form>
+</div>
+

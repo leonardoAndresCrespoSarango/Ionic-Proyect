@@ -1,0 +1,72 @@
+<ion-content class="login-content">
+  <div class="login-container">
+    <div class="logo-section">
+      <h1>ETIKOS</h1>
+      <p>Iniciar Sesión</p>
+    </div>
+
+    <!-- Login biométrico -->
+    <div class="biometric-section" *ngIf="biometricState.canUseForLogin">
+      <ion-button
+        expand="full"
+        color="primary"
+        (click)="loginWithBiometric()"
+        [disabled]="loading"
+        class="biometric-btn">
+        <ion-icon name="finger-print" slot="start"></ion-icon>
+        Iniciar con Huella
+      </ion-button>
+      <div class="divider">
+        <span>o</span>
+      </div>
+    </div>
+
+    <!-- Login tradicional -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+          placeholder="Ingresa tu email">
+        </ion-input>
+      </ion-item>
+      <div *ngIf="email?.invalid && email?.touched" class="error-message">
+        <ion-text color="danger">Email es requerido</ion-text>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input
+          type="password"
+          formControlName="password"
+          placeholder="Ingresa tu contraseña">
+        </ion-input>
+      </ion-item>
+      <div *ngIf="password?.invalid && password?.touched" class="error-message">
+        <ion-text color="danger">Contraseña es requerida</ion-text>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-alert">
+        <ion-text color="danger">{{ errorMessage }}</ion-text>
+      </div>
+
+      <ion-button
+        type="submit"
+        expand="full"
+        [disabled]="loginForm.invalid || loading"
+        class="login-btn">
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        {{ loading ? 'Cargando...' : 'Iniciar Sesión' }}
+      </ion-button>
+    </form>
+  </div>
+
+  <!-- Diálogo de configuración biométrica -->
+  <app-biometric-setup-dialog
+    [isOpen]="showBiometricDialog"
+    [userCredentials]="pendingCredentials"
+    (biometricActivated)="onBiometricActivated()"
+    (dialogDismissed)="onBiometricDialogDismissed()">
+  </app-biometric-setup-dialog>
+</ion-content>

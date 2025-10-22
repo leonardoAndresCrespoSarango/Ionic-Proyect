@@ -8,19 +8,8 @@ import { CommonModule } from '@angular/common';
   selector: 'app-minimal-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div style="max-width:320px;margin:60px auto;padding:24px;border-radius:8px;box-shadow:0 2px 8px #eee;background:#fff;">
-      <h3 style="text-align:center;margin-bottom:24px;">Login</h3>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <input type="email" formControlName="email" placeholder="Email" style="width:100%;margin-bottom:12px;padding:8px;border-radius:4px;border:1px solid #ccc;">
-        <input type="password" formControlName="password" placeholder="Contraseña" style="width:100%;margin-bottom:12px;padding:8px;border-radius:4px;border:1px solid #ccc;">
-        <div *ngIf="errorMessage" style="color:#d00;font-size:13px;margin-bottom:8px;">{{ errorMessage }}</div>
-        <button type="submit" [disabled]="loginForm.invalid || loading" style="width:100%;padding:10px;border:none;border-radius:4px;background:#007bff;color:#fff;font-weight:bold;">
-          {{ loading ? 'Cargando...' : 'Entrar' }}
-        </button>
-      </form>
-    </div>
-  `
+  templateUrl: './minimal-login.component.html',
+  styleUrls: ['./minimal-login.component.scss']
 })
 export class MinimalLoginComponent {
   loginForm: FormGroup;

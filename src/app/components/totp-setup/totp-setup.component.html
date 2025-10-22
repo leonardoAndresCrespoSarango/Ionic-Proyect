@@ -1,0 +1,167 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Autenticación de Dos Factores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="totp-setup-container">
+
+    <!-- Estado actual de TOTP -->
+    <ion-card *ngIf="!isConfiguringTotp">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="shield-checkmark" [color]="totpEnabled ? 'success' : 'medium'"></ion-icon>
+          Autenticación de Dos Factores (2FA)
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="status-section">
+          <p class="status-text">
+            <strong>Estado:</strong>
+            <ion-badge [color]="totpEnabled ? 'success' : 'medium'">
+              {{ totpEnabled ? 'Habilitado' : 'Deshabilitado' }}
+            </ion-badge>
+          </p>
+
+          <p class="description">
+            La autenticación de dos factores agrega una capa adicional de seguridad a tu cuenta.
+            Necesitarás una aplicación como Google Authenticator o Microsoft Authenticator.
+          </p>
+        </div>
+
+        <!-- Botón para habilitar -->
+        <ion-button
+          *ngIf="!totpEnabled"
+          expand="block"
+          (click)="startTotpSetup()"
+          color="primary"
+        >
+          <ion-icon slot="start" name="add-circle"></ion-icon>
+          Habilitar 2FA
+        </ion-button>
+
+        <!-- Botón para deshabilitar -->
+        <ion-button
+          *ngIf="totpEnabled"
+          expand="block"
+          (click)="disableTotp()"
+          color="danger"
+          fill="outline"
+        >
+          <ion-icon slot="start" name="close-circle"></ion-icon>
+          Deshabilitar 2FA
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Proceso de configuración -->
+    <ion-card *ngIf="isConfiguringTotp">
+      <ion-card-header>
+        <ion-card-title>Configurar Autenticación de Dos Factores</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="setup-steps">
+          <!-- Paso 1: Escanear QR -->
+          <div class="step">
+            <h3>1. Escanea el código QR</h3>
+            <p>Abre tu aplicación de autenticación y escanea este código:</p>
+
+            <div class="qr-code-container" *ngIf="qrCodeDataUri">
+              <img [src]="qrCodeDataUri" alt="QR Code" class="qr-code" />
+            </div>
+          </div>
+
+          <!-- Paso 2: Clave manual (opcional) -->
+          <div class="step">
+            <h3>2. O ingresa la clave manualmente</h3>
+            <p>Si no puedes escanear el QR, ingresa esta clave en tu aplicación:</p>
+
+            <ion-item>
+              <ion-label position="stacked">Clave Secreta</ion-label>
+              <ion-input
+                [value]="secretKey"
+                readonly
+                class="secret-key"
+              ></ion-input>
+              <ion-button slot="end" fill="clear" (click)="copySecret()">
+                <ion-icon name="copy"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </div>
+
+          <!-- Paso 3: Verificar código -->
+          <div class="step">
+            <h3>3. Ingresa el código de verificación</h3>
+            <p>Ingresa el código de 6 dígitos que aparece en tu aplicación:</p>
+
+            <ion-item>
+              <ion-label position="stacked">Código de Verificación</ion-label>
+              <ion-input
+                type="text"
+                inputmode="numeric"
+                [(ngModel)]="verificationCode"
+                (ionInput)="onCodeInput($event)"
+                placeholder="000000"
+                maxlength="6"
+              ></ion-input>
+            </ion-item>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="action-buttons">
+            <ion-button
+              expand="block"
+              (click)="verifyAndEnableTotp()"
+              [disabled]="verificationCode.length !== 6"
+              color="primary"
+            >
+              <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+              Verificar y Habilitar
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              fill="clear"
+              (click)="cancelSetup()"
+            >
+              Cancelar
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información adicional -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Aplicaciones Recomendadas</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="logo-google" slot="start" color="primary"></ion-icon>
+            <ion-label>Google Authenticator</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="logo-microsoft" slot="start" color="primary"></ion-icon>
+            <ion-label>Microsoft Authenticator</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="shield" slot="start" color="primary"></ion-icon>
+            <ion-label>Authy</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>
+

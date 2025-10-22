@@ -3,7 +3,6 @@ import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MinimalLoginComponent } from './components/minimal-login.component';
-import { MinimalDashboardComponent } from './components/minimal-dashboard.component';
 
 export const routes: Routes = [
   {
@@ -23,10 +22,5 @@ export const routes: Routes = [
   {
     path: 'minimal-login',
     component: MinimalLoginComponent,
-  },
-  {
-    path: 'minimal-dashboard',
-    component: MinimalDashboardComponent,
-    canActivate: [authGuard],
   },
 ];

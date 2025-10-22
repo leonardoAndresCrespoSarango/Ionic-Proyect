@@ -1,0 +1,103 @@
+<div class="dashboard-wrapper">
+  <!-- Sidebar personalizado -->
+  <div class="custom-sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="sidebar-title">
+        <span *ngIf="!sidebarCollapsed">ETIKOS</span>
+        <span *ngIf="sidebarCollapsed" class="collapsed-title">E</span>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <ion-icon [name]="sidebarCollapsed ? 'chevron-forward' : 'chevron-back'"></ion-icon>
+      </button>
+    </div>
+
+    <div class="sidebar-content">
+      <div class="menu-item" [class.active]="true">
+        <ion-icon name="person"></ion-icon>
+        <span *ngIf="!sidebarCollapsed" class="menu-label">Dashboard</span>
+      </div>
+      <!-- Agregar más opciones del menú aquí -->
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div class="main-content" [class.sidebar-collapsed]="sidebarCollapsed">
+    <!-- Header -->
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Dashboard</ion-title>
+
+        <ion-buttons slot="end">
+          <!-- User Info -->
+          <div class="user-info">
+            <ion-text>
+              <p class="greeting">{{ greeting }}</p>
+              <p class="username">{{ currentUser?.name || 'Usuario' }}</p>
+            </ion-text>
+          </div>
+
+          <!-- Menu Button -->
+          <ion-button fill="clear" id="options-trigger">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+
+          <!-- Options Popover -->
+          <ion-popover trigger="options-trigger" triggerAction="click">
+            <ng-template>
+              <ion-content class="popover-content">
+                <ion-list>
+                  <ion-item [button]="true" (click)="openTotpSetup()">
+                    <ion-icon name="shield-checkmark" slot="start" color="primary"></ion-icon>
+                    <ion-label>Autenticación 2FA</ion-label>
+                  </ion-item>
+                  <ion-item [button]="true" (click)="showRemoveBiometricDialog()" *ngIf="biometricState.hasStoredCredentials">
+                    <ion-icon name="finger-print" slot="start" color="danger"></ion-icon>
+                    <ion-label color="danger">Eliminar Huella</ion-label>
+                  </ion-item>
+                  <ion-item [button]="true" (click)="logout()">
+                    <ion-icon name="log-out" slot="start"></ion-icon>
+                    <ion-label>Cerrar Sesión</ion-label>
+                  </ion-item>
+                </ion-list>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Dashboard Content -->
+    <ion-content class="dashboard-content">
+      <div class="content-container">
+        <div class="welcome-section">
+          <h1>Bienvenido a ETIKOS</h1>
+          <p>{{ greeting }}, {{ currentUser?.name }}!</p>
+        </div>
+
+        <div class="cards-section">
+          <!-- Aquí irán las tarjetas del dashboard -->
+          <div class="card">
+            <h3>Panel Principal</h3>
+            <p>Contenido del dashboard...</p>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </div>
+</div>
+
+<!-- Diálogo de eliminación de biometría -->
+<app-remove-biometric-dialog
+  [isOpen]="showRemoveDialog"
+  (confirmed)="onRemoveBiometricConfirmed()"
+  (cancelled)="onRemoveDialogCancelled()">
+</app-remove-biometric-dialog>
+
+<!-- Diálogo de configuración biométrica -->
+<app-biometric-setup-dialog
+  [isOpen]="showBiometricSetupDialog"
+  [userCredentials]="pendingCredentials"
+  (biometricActivated)="onBiometricActivated()"
+  (dialogDismissed)="onBiometricSetupDismissed()">
+</app-biometric-setup-dialog>
+

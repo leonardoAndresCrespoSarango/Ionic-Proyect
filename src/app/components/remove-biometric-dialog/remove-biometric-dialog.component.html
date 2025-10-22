@@ -1,0 +1,77 @@
+<ion-modal [isOpen]="isOpen" (didDismiss)="onCancel()">
+  <ion-header>
+    <ion-toolbar color="danger">
+      <ion-title>Eliminar Huella</ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="onCancel()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="dialog-content">
+    <div class="content-container">
+      <div class="icon-section">
+        <ion-icon name="warning" class="warning-icon"></ion-icon>
+      </div>
+
+      <div class="text-section">
+        <h2>¿Eliminar Huella Dactilar?</h2>
+        <p>
+          Esta acción eliminará tu huella dactilar guardada y desactivará
+          el inicio de sesión biométrico.
+        </p>
+
+        <div class="consequences">
+          <div class="consequence-item">
+            <ion-icon name="finger-print" color="danger"></ion-icon>
+            <span>Se eliminará tu huella guardada</span>
+          </div>
+          <div class="consequence-item">
+            <ion-icon name="close" color="danger"></ion-icon>
+            <span>No podrás usar inicio rápido</span>
+          </div>
+          <div class="consequence-item">
+            <ion-icon name="warning" color="warning"></ion-icon>
+            <span>Tendrás que usar email y contraseña</span>
+          </div>
+        </div>
+
+        <div class="note">
+          <ion-text color="medium">
+            <p><strong>Nota:</strong> Podrás volver a activar la biometría cuando quieras.</p>
+          </ion-text>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <ion-button
+          expand="full"
+          color="danger"
+          (click)="onConfirm()"
+          [disabled]="loading"
+          class="remove-btn">
+          <ion-icon name="trash" slot="start"></ion-icon>
+          {{ loading ? 'Eliminando...' : 'Sí, Eliminar Huella' }}
+        </ion-button>
+
+        <ion-button
+          expand="full"
+          fill="outline"
+          color="medium"
+          (click)="onCancel()"
+          [disabled]="loading"
+          class="cancel-btn">
+          Cancelar
+        </ion-button>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-section">
+        <ion-text color="danger">
+          <p>{{ errorMessage }}</p>
+        </ion-text>
+      </div>
+    </div>
+  </ion-content>
+</ion-modal>
