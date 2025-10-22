@@ -7,6 +7,7 @@ export interface User {
   role: 'CUSTOMER' | 'ADMIN';
   biometricEnabled: boolean;
   totpEnabled: boolean;
+  disabled?: boolean;
 }
 
 export interface LoginRequest {

@@ -16,7 +16,12 @@
         <ion-icon name="person"></ion-icon>
         <span *ngIf="!sidebarCollapsed" class="menu-label">Dashboard</span>
       </div>
-      <!-- Agregar más opciones del menú aquí -->
+
+      <!-- Opción de administración solo para ADMIN -->
+      <div class="menu-item" *ngIf="currentUser?.role === 'ADMIN'" (click)="navigateToAdminUsers()">
+        <ion-icon name="people-outline"></ion-icon>
+        <span *ngIf="!sidebarCollapsed" class="menu-label">Administrar Usuarios</span>
+      </div>
     </div>
   </div>
 

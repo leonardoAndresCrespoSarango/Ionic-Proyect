@@ -17,7 +17,7 @@ import {
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward } from 'ionicons/icons';
+import { menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward, peopleOutline } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { BiometricService } from '../../services/biometric.service';
 import { RemoveBiometricDialogComponent } from '../remove-biometric-dialog/remove-biometric-dialog.component';
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
   pendingCredentials: { email: string; password: string } | null = null;
 
   constructor() {
-    addIcons({ menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward });
+    addIcons({ menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward, peopleOutline });
   }
 
   async ngOnInit() {
@@ -174,6 +174,15 @@ export class DashboardComponent implements OnInit {
     });
 
     await modal.present();
+  }
+
+  /**
+   * Navegar al panel de administración de usuarios (solo ADMIN)
+   */
+  navigateToAdminUsers() {
+    if (this.currentUser?.role === 'ADMIN') {
+      this.router.navigate(['/admin/users']);
+    }
   }
 }
 

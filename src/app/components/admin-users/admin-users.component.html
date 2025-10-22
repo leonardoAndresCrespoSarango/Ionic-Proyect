@@ -1,0 +1,182 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="people-outline"></ion-icon>
+      Administración de Usuarios
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshUsers()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Barra de búsqueda y acciones -->
+  <div class="actions-bar">
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionInput)="filterUsers($event)"
+      placeholder="Buscar usuarios..."
+      animated
+    ></ion-searchbar>
+
+    <ion-button expand="block" (click)="toggleNewUserForm()" color="success">
+      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+      {{ showNewUserForm ? 'Cancelar' : 'Nuevo Usuario' }}
+    </ion-button>
+  </div>
+
+  <!-- Formulario de nuevo usuario -->
+  <ion-card *ngIf="showNewUserForm" class="new-user-card">
+    <ion-card-header>
+      <ion-card-title>Registrar Nuevo Usuario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="newUserForm" (ngSubmit)="registerNewUser()">
+        <ion-item>
+          <ion-label position="floating">Usuario *</ion-label>
+          <ion-input formControlName="username" type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Email *</ion-label>
+          <ion-input formControlName="email" type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Contraseña *</ion-label>
+          <ion-input formControlName="password" type="password"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Nombre *</ion-label>
+          <ion-input formControlName="name" type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Apellido *</ion-label>
+          <ion-input formControlName="lastname" type="text"></ion-input>
+        </ion-item>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          [disabled]="newUserForm.invalid"
+          class="submit-button"
+        >
+          <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+          Registrar Usuario
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estadísticas -->
+  <ion-card class="stats-card">
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4">
+            <div class="stat-item">
+              <h3>{{ users?.length || 0 }}</h3>
+              <p>Total Usuarios</p>
+            </div>
+          </ion-col>
+          <ion-col size="4">
+            <div class="stat-item">
+              <h3>{{ getActiveUsersCount() }}</h3>
+              <p>Activos</p>
+            </div>
+          </ion-col>
+          <ion-col size="4">
+            <div class="stat-item">
+              <h3>{{ getBlockedUsersCount() }}</h3>
+              <p>Bloqueados</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de usuarios -->
+  <div class="users-list">
+    <ion-card *ngFor="let user of filteredUsers" class="user-card">
+      <ion-card-header>
+        <div class="user-header">
+          <div class="user-info">
+            <ion-card-title>
+              {{ user.username }}
+              <ion-badge [color]="getRoleBadgeColor(user.role)">
+                {{ user.role }}
+              </ion-badge>
+            </ion-card-title>
+            <p class="user-email">{{ user.email }}</p>
+          </div>
+          <div class="user-status">
+            <ion-chip [color]="getStatusColor(user.disabled)">
+              <ion-icon [name]="user.disabled ? 'lock-closed-outline' : 'checkmark-circle'"></ion-icon>
+              <ion-label>{{ user.disabled ? 'Bloqueado' : 'Activo' }}</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="user-details">
+          <p><strong>Nombre:</strong> {{ user.name }} {{ user.lastname }}</p>
+          <p><strong>ID:</strong> {{ user.uid }}</p>
+
+          <div class="security-features">
+            <ion-chip color="medium" *ngIf="user.biometricEnabled">
+              <ion-icon name="finger-print"></ion-icon>
+              <ion-label>Biometría</ion-label>
+            </ion-chip>
+            <ion-chip color="medium" *ngIf="user.totpEnabled">
+              <ion-icon name="shield-checkmark"></ion-icon>
+              <ion-label>2FA</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="user-actions">
+          <ion-button fill="clear" size="small" (click)="showUserDetails(user)">
+            <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" size="small" (click)="editUserCredentials(user)">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button
+            fill="clear"
+            size="small"
+            [color]="user.disabled ? 'success' : 'warning'"
+            (click)="toggleUserBlock(user)"
+          >
+            <ion-icon
+              slot="icon-only"
+              [name]="user.disabled ? 'lock-open-outline' : 'lock-closed-outline'"
+            ></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" size="small" color="secondary" (click)="recoverUserAccess(user)">
+            <ion-icon slot="icon-only" name="key-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" size="small" color="danger" (click)="deleteUser(user)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensaje si no hay usuarios -->
+    <ion-card *ngIf="filteredUsers.length === 0 && !isLoading">
+      <ion-card-content class="empty-state">
+        <ion-icon name="people-outline" size="large"></ion-icon>
+        <p>No se encontraron usuarios</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
