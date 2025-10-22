@@ -46,6 +46,7 @@ import { AdminService, UpdateCredentialsRequest } from '../../services/admin.ser
 import { AuthService } from '../../services/auth.service';
 import { User, RegisterRequest } from '../../models/user.model';
 import { Router } from '@angular/router';
+import { IonModal, IonNote } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-admin-users',
@@ -75,7 +76,9 @@ import { Router } from '@angular/router';
     IonGrid,
     IonRow,
     IonCol,
-    IonInput],
+    IonInput,
+    IonModal,
+    IonNote],
 })
 export class AdminUsersComponent implements OnInit {
   private adminService = inject(AdminService);
@@ -97,6 +100,8 @@ export class AdminUsersComponent implements OnInit {
 
   // Estados
   showNewUserForm: boolean = false;
+  isEditModalOpen: boolean = false;
+  selectedUserForEdit: User | null = null;
 
   constructor() {
     addIcons({
@@ -146,12 +151,17 @@ export class AdminUsersComponent implements OnInit {
   /**
    * Cargar todos los usuarios
    */
-  async loadUsers() {
+  async loadUsers(options: { silent?: boolean } = {}) {
+    const { silent = false } = options;
     this.isLoading = true;
-    const loading = await this.loadingCtrl.create({
-      message: 'Cargando usuarios...'
-    });
-    await loading.present();
+    let loading: HTMLIonLoadingElement | undefined;
+
+    if (!silent) {
+      loading = await this.loadingCtrl.create({
+        message: 'Cargando usuarios...'
+      });
+      await loading.present();
+    }
 
     try {
       const response = await this.adminService.getAllUsers();
@@ -161,24 +171,22 @@ export class AdminUsersComponent implements OnInit {
 
       // Asegurar que siempre sea un array
       if (Array.isArray(response)) {
-        this.users = response;
-        this.filteredUsers = [...this.users];
+        this.users = response.map(user => this.normalizeUser(user));
+        this.refreshFilteredUsers();
         console.log(`✅ ${this.users.length} usuario(s) cargado(s) correctamente`);
         console.log('👥 Usuarios:', this.users);
       } else {
         console.error('❌ La respuesta no es un array:', response);
-        this.users = [];
-        this.filteredUsers = [];
         await this.showToast('Error: Respuesta inválida del servidor', 'danger');
       }
     } catch (error: any) {
       console.error('❌ Error cargando usuarios:', error);
-      this.users = [];
-      this.filteredUsers = [];
       const message = error?.error?.message || error?.message || 'Error al cargar usuarios';
       await this.showToast(message, 'danger');
     } finally {
-      await loading.dismiss();
+      if (loading) {
+        await loading.dismiss();
+      }
       this.isLoading = false;
     }
   }
@@ -187,20 +195,8 @@ export class AdminUsersComponent implements OnInit {
    * Filtrar usuarios por búsqueda
    */
   filterUsers(event: any) {
-    const searchTerm = event.target.value?.toLowerCase() || '';
-    this.searchTerm = searchTerm;
-
-    if (!searchTerm) {
-      this.filteredUsers = [...this.users];
-      return;
-    }
-
-    this.filteredUsers = this.users.filter(user =>
-      user.username.toLowerCase().includes(searchTerm) ||
-      user.email.toLowerCase().includes(searchTerm) ||
-      user.name.toLowerCase().includes(searchTerm) ||
-      user.lastname.toLowerCase().includes(searchTerm)
-    );
+    this.searchTerm = event?.target?.value || '';
+    this.refreshFilteredUsers();
   }
 
   /**
@@ -233,7 +229,7 @@ export class AdminUsersComponent implements OnInit {
       await this.showToast('Usuario registrado exitosamente', 'success');
       this.newUserForm.reset();
       this.showNewUserForm = false;
-      await this.loadUsers();
+      await this.loadUsers({ silent: true });
     } catch (error: any) {
       console.error('Error registrando usuario:', error);
       const message = error?.error?.message || 'Error al registrar usuario';
@@ -247,77 +243,106 @@ export class AdminUsersComponent implements OnInit {
    * Editar credenciales de usuario
    */
   async editUserCredentials(user: User) {
-    const alert = await this.alertCtrl.create({
-      header: 'Editar Credenciales',
-      subHeader: `Usuario: ${user.username}`,
-      inputs: [
-        {
-          name: 'newEmail',
-          type: 'email',
-          placeholder: 'Nuevo email (opcional)',
-          value: user.email
-        },
-        {
-          name: 'newPassword',
-          type: 'password',
-          placeholder: 'Nueva contraseña (opcional)',
-          attributes: {
-            minlength: 6
-          }
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Actualizar',
-          handler: async (data) => {
-            if (!data.newEmail && !data.newPassword) {
-              await this.showToast('Debes proporcionar al menos un campo para actualizar', 'warning');
-              return false;
-            }
-
-            const loading = await this.loadingCtrl.create({
-              message: 'Actualizando credenciales...'
-            });
-            await loading.present();
-
-            try {
-              const request: UpdateCredentialsRequest = {};
-              if (data.newEmail && data.newEmail !== user.email) {
-                request.newEmail = data.newEmail;
-              }
-              if (data.newPassword) {
-                request.newPassword = data.newPassword;
-              }
-
-              await this.adminService.updateCredentials(user.uid, request);
-              await this.showToast('Credenciales actualizadas exitosamente', 'success');
-              await this.loadUsers();
-            } catch (error: any) {
-              console.error('Error actualizando credenciales:', error);
-              const message = error?.error?.message || 'Error al actualizar credenciales';
-              await this.showToast(message, 'danger');
-            } finally {
-              await loading.dismiss();
-            }
-
-            return true;
-          }
-        }
-      ]
+    this.selectedUserForEdit = user;
+    this.editCredentialsForm.reset({
+      newEmail: user.email || '',
+      newPassword: ''
     });
+    this.isEditModalOpen = true;
+  }
 
-    await alert.present();
+  /**
+   * Cerrar modal de edición
+   */
+  closeEditModal() {
+    this.isEditModalOpen = false;
+  }
+
+  /**
+   * Limpiar estado cuando el modal termina de cerrarse
+   */
+  onEditModalDidDismiss() {
+    this.selectedUserForEdit = null;
+    this.editCredentialsForm.reset();
+  }
+
+  /**
+   * Guardar cambios de credenciales desde el modal
+   */
+  async submitEditCredentials() {
+    if (!this.selectedUserForEdit) {
+      return;
+    }
+
+    const previousEmail = this.selectedUserForEdit.email;
+    const rawEmail: string = this.editCredentialsForm.value.newEmail || '';
+    const trimmedEmail = rawEmail.trim();
+    const newPassword: string = this.editCredentialsForm.value.newPassword || '';
+
+    const emailChanged = trimmedEmail && trimmedEmail !== previousEmail;
+    const passwordChanged = !!newPassword;
+
+    if (!emailChanged && !passwordChanged) {
+      await this.showToast('Debes actualizar el correo o la contraseña.', 'warning');
+      return;
+    }
+
+    if (trimmedEmail && this.editCredentialsForm.get('newEmail')?.invalid) {
+      this.editCredentialsForm.get('newEmail')?.markAsTouched();
+      await this.showToast('Ingresa un email válido.', 'warning');
+      return;
+    }
+
+    if (newPassword && newPassword.length < 6) {
+      this.editCredentialsForm.get('newPassword')?.markAsTouched();
+      await this.showToast('La contraseña debe tener al menos 6 caracteres.', 'warning');
+      return;
+    }
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Actualizando credenciales...'
+    });
+    await loading.present();
+
+    try {
+      const request: UpdateCredentialsRequest = {};
+      if (emailChanged) {
+        request.newEmail = trimmedEmail;
+      }
+      if (passwordChanged) {
+        request.newPassword = newPassword;
+      }
+
+      await this.adminService.updateCredentials(this.selectedUserForEdit.uid, request);
+
+      if (request.newEmail) {
+        const search = this.searchTerm.trim().toLowerCase();
+        const oldEmailMatches = previousEmail?.toLowerCase?.().includes(search);
+        const newEmailMatches = request.newEmail.toLowerCase().includes(search);
+        if (search && oldEmailMatches && !newEmailMatches) {
+          this.searchTerm = request.newEmail;
+        }
+        this.patchLocalUser(this.selectedUserForEdit.uid, { email: request.newEmail });
+      }
+
+      await this.showToast('Credenciales actualizadas exitosamente', 'success');
+      await this.loadUsers({ silent: true });
+      this.closeEditModal();
+    } catch (error: any) {
+      console.error('Error actualizando credenciales:', error);
+      const message = error?.error?.message || 'Error al actualizar credenciales';
+      await this.showToast(message, 'danger');
+    } finally {
+      await loading.dismiss();
+    }
   }
 
   /**
    * Bloquear o desbloquear usuario
    */
   async toggleUserBlock(user: User) {
-    const action = user.disabled ? 'desbloquear' : 'bloquear';
+    const currentStatus = !!user.disabled;
+    const action = currentStatus ? 'desbloquear' : 'bloquear';
     const alert = await this.alertCtrl.create({
       header: `¿${action.charAt(0).toUpperCase() + action.slice(1)} Usuario?`,
       message: `¿Estás seguro de que deseas ${action} a ${user.username}?`,
@@ -335,9 +360,11 @@ export class AdminUsersComponent implements OnInit {
             await loading.present();
 
             try {
-              await this.adminService.setUserBlock(user.uid, !user.disabled);
+              const newStatus = !currentStatus;
+              await this.adminService.setUserBlock(user.uid, newStatus);
+              this.patchLocalUser(user.uid, { disabled: newStatus });
+              await this.loadUsers({ silent: true });
               await this.showToast(`Usuario ${action}ado exitosamente`, 'success');
-              await this.loadUsers();
             } catch (error: any) {
               console.error(`Error ${action}ando usuario:`, error);
               const message = error?.error?.message || `Error al ${action} usuario`;
@@ -377,7 +404,7 @@ export class AdminUsersComponent implements OnInit {
             try {
               await this.adminService.deleteUser(user.uid);
               await this.showToast('Usuario eliminado exitosamente', 'success');
-              await this.loadUsers();
+              await this.loadUsers({ silent: true });
             } catch (error: any) {
               console.error('Error eliminando usuario:', error);
               const message = error?.error?.message || 'Error al eliminar usuario';
@@ -437,18 +464,8 @@ export class AdminUsersComponent implements OnInit {
   async showUserDetails(user: User) {
     const alert = await this.alertCtrl.create({
       header: 'Detalles del Usuario',
-      message: `
-        <div style="text-align: left; padding: 10px;">
-          <p><strong>ID:</strong> ${user.uid}</p>
-          <p><strong>Usuario:</strong> ${user.username}</p>
-          <p><strong>Email:</strong> ${user.email}</p>
-          <p><strong>Nombre:</strong> ${user.name} ${user.lastname}</p>
-          <p><strong>Rol:</strong> ${user.role}</p>
-          <p><strong>Estado:</strong> ${user.disabled ? '🔒 Bloqueado' : '✅ Activo'}</p>
-          <p><strong>Biometría:</strong> ${user.biometricEnabled ? '✅ Habilitada' : '❌ Deshabilitada'}</p>
-          <p><strong>TOTP (2FA):</strong> ${user.totpEnabled ? '✅ Habilitado' : '❌ Deshabilitado'}</p>
-        </div>
-      `,
+      message: this.buildUserDetailsMessage(user),
+      cssClass: 'user-details-alert',
       buttons: ['Cerrar']
     });
 
@@ -508,5 +525,92 @@ export class AdminUsersComponent implements OnInit {
     }
     return this.users.filter(user => user.disabled === true).length;
   }
-}
 
+  /**
+   * Obtener el resumen de autenticación del usuario
+   */
+  getAuthenticationSummary(user: User): string {
+    const methods: string[] = [];
+
+    methods.push('Contraseña');
+
+    if (user.totpEnabled) {
+      methods.push('TOTP (2FA)');
+    }
+
+    if (user.biometricEnabled) {
+      methods.push('Biometría');
+    }
+
+    return methods.join(' + ');
+  }
+
+  /**
+   * Normalizar datos del usuario para evitar valores undefined
+   */
+  private normalizeUser(user: User): User {
+    return {
+      ...user,
+      disabled: !!user.disabled,
+      biometricEnabled: !!user.biometricEnabled,
+      totpEnabled: !!user.totpEnabled
+    };
+  }
+
+  /**
+   * Actualizar búsqueda actual aplicando el filtro almacenado
+   */
+  private refreshFilteredUsers(): void {
+    const normalizedTerm = this.searchTerm.trim().toLowerCase();
+
+    if (!normalizedTerm) {
+      this.filteredUsers = [...this.users];
+      return;
+    }
+
+    this.filteredUsers = this.users.filter(user =>
+      user.username.toLowerCase().includes(normalizedTerm) ||
+      user.email.toLowerCase().includes(normalizedTerm) ||
+      user.name.toLowerCase().includes(normalizedTerm) ||
+      user.lastname.toLowerCase().includes(normalizedTerm)
+    );
+  }
+
+  /**
+   * Actualizar parcialmente un usuario en la lista local
+   */
+  private patchLocalUser(uid: string, changes: Partial<User>): void {
+    let updated = false;
+
+    this.users = this.users.map(existing => {
+      if (existing.uid === uid) {
+        updated = true;
+        return this.normalizeUser({ ...existing, ...changes });
+      }
+      return existing;
+    });
+
+    if (updated) {
+      this.refreshFilteredUsers();
+    }
+  }
+
+  /**
+   * Construir mensaje de detalles del usuario para diálogos
+   */
+  private buildUserDetailsMessage(user: User): string {
+    const lines = [
+      `ID: ${user.uid}`,
+      `Usuario: ${user.username}`,
+      `Email: ${user.email}`,
+      `Nombre: ${user.name} ${user.lastname}`,
+      `Rol: ${user.role}`,
+      `Estado: ${user.disabled ? 'Bloqueado' : 'Activo'}`,
+      `Autenticación: ${this.getAuthenticationSummary(user)}`,
+      `Biometría: ${user.biometricEnabled ? 'Habilitada' : 'Deshabilitada'}`,
+      `TOTP (2FA): ${user.totpEnabled ? 'Habilitado' : 'Deshabilitado'}`
+    ];
+
+    return lines.join('\n');
+  }
+}

@@ -163,3 +163,38 @@
   }
 }
 
+:host ::ng-deep .user-details-alert .alert-message {
+  white-space: pre-line;
+}
+
+:host ::ng-deep .edit-credentials-modal {
+  --width: 500px;
+  --max-width: 90%;
+  --height: fit-content;
+  --border-radius: 16px;
+}
+
+.edit-modal-content {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    ion-item {
+      --inner-padding-top: 8px;
+      --inner-padding-bottom: 8px;
+    }
+
+    ion-note {
+      margin: -8px 0 0 4px;
+      font-size: 13px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+  }
+}

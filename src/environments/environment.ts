@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://violet-unusual-confessedly.ngrok-free.dev/users'
+  apiUrl: 'http://localhost:8002/users'
 };
 
