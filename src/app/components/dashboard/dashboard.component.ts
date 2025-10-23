@@ -129,7 +129,7 @@ export class DashboardComponent implements OnInit {
 
   async logout() {
     await this.popoverController.dismiss();
-    this.authService.logout();
+    await this.authService.logout();
     this.router.navigate(['/login']);
   }
 

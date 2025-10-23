@@ -83,20 +83,52 @@ export class AuthService {
     );
   }
 
-  logout(): void {
-    if (this.isLoggingOut) return;
-    this.isLoggingOut = true;
-    if (this.hasToken()) {
-      // Intentar logout en servidor, pero no bloquear si falla
-      this.makeHttpRequest('POST', `${this.API_URL}/audit/logout`, {}).catch((err) => {
-        console.warn('Error logging out:', err);
-      });
+  async logout(): Promise<void> {
+  if (this.isLoggingOut) return;
+  this.isLoggingOut = true;
+
+  try {
+    const token = this.getToken();
+
+    if (token) {
+      // 1. PRIMERO: Registrar el logout en el servidor CON el token
+      const baseUrl = this.API_URL.replace('/users', '');
+      const url = `${baseUrl}/users/audit/logout`;
+
+      console.log(' Registrando logout en servidor...');
+
+      if (this.isMobile()) {
+        // En móvil, enviar el token manualmente en el header
+        const options: HttpOptions = {
+          url,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` //  INCLUIR EL TOKEN
+          },
+          data: {} // Body vacío pero headers con token
+        };
+        await CapacitorHttp.request(options);
+      } else {
+        // En web, el interceptor maneja el token automáticamente
+        await this.http.post(url, {}).toPromise();
+      }
+
+      console.log(' Logout registrado en servidor');
     }
+  } catch (error) {
+    // No bloquear el logout si falla el registro
+    console.warn(' Error registrando logout en servidor:', error);
+  } finally {
+    // 2. DESPUÉS: Limpiar el almacenamiento local
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.isLoggingOut = false;
+    console.log(' Sesión cerrada localmente');
   }
+}
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
