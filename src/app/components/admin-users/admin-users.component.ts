@@ -165,22 +165,22 @@ export class AdminUsersComponent implements OnInit {
 
     try {
       const response = await this.adminService.getAllUsers();
-      console.log('📦 Respuesta del backend:', response);
-      console.log('📦 Tipo de respuesta:', typeof response);
-      console.log('📦 Es array:', Array.isArray(response));
+      console.log(' Respuesta del backend:', response);
+      console.log('Tipo de respuesta:', typeof response);
+      console.log('Es array:', Array.isArray(response));
 
       // Asegurar que siempre sea un array
       if (Array.isArray(response)) {
         this.users = response.map(user => this.normalizeUser(user));
         this.refreshFilteredUsers();
-        console.log(`✅ ${this.users.length} usuario(s) cargado(s) correctamente`);
+        console.log(`${this.users.length} usuario(s) cargado(s) correctamente`);
         console.log('👥 Usuarios:', this.users);
       } else {
-        console.error('❌ La respuesta no es un array:', response);
+        console.error(' La respuesta no es un array:', response);
         await this.showToast('Error: Respuesta inválida del servidor', 'danger');
       }
     } catch (error: any) {
-      console.error('❌ Error cargando usuarios:', error);
+      console.error(' Error cargando usuarios:', error);
       const message = error?.error?.message || error?.message || 'Error al cargar usuarios';
       await this.showToast(message, 'danger');
     } finally {
@@ -385,7 +385,7 @@ export class AdminUsersComponent implements OnInit {
    */
   async deleteUser(user: User) {
     const alert = await this.alertCtrl.create({
-      header: '⚠️ Eliminar Usuario',
+      header: ' Eliminar Usuario',
       message: `¿Estás seguro de que deseas eliminar permanentemente a <strong>${user.username}</strong>? Esta acción no se puede deshacer.`,
       buttons: [
         {

@@ -87,21 +87,21 @@ export class AdminService {
    */
   async getAllUsers(): Promise<User[]> {
     try {
-      console.log('📋 Obteniendo lista de usuarios...');
+      console.log(' Obteniendo lista de usuarios...');
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users`;
       const response = await this.makeAuthRequest('GET', url);
 
       // Validar que la respuesta sea un array
       if (!Array.isArray(response)) {
-        console.error('❌ Respuesta no es un array:', response);
+        console.error(' Respuesta no es un array:', response);
         return [];
       }
 
-      console.log(`✅ ${response.length} usuario(s) obtenido(s) del backend`);
+      console.log(` ${response.length} usuario(s) obtenido(s) del backend`);
       return response;
     } catch (error) {
-      console.error('❌ Error obteniendo usuarios:', error);
+      console.error(' Error obteniendo usuarios:', error);
       throw error;
     }
   }
@@ -111,12 +111,12 @@ export class AdminService {
    */
   async getUserById(uid: string): Promise<User> {
     try {
-      console.log(`📋 Obteniendo usuario: ${uid}`);
+      console.log(`Obteniendo usuario: ${uid}`);
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/${uid}`;
       return await this.makeAuthRequest('GET', url);
     } catch (error) {
-      console.error('❌ Error obteniendo usuario:', error);
+      console.error(' Error obteniendo usuario:', error);
       throw error;
     }
   }
@@ -126,12 +126,12 @@ export class AdminService {
    */
   async registerUser(request: RegisterRequest): Promise<User> {
     try {
-      console.log('➕ Registrando nuevo usuario...');
+      console.log(' Registrando nuevo usuario...');
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/register`;
       return await this.makeAuthRequest('POST', url, request);
     } catch (error) {
-      console.error('❌ Error registrando usuario:', error);
+      console.error('Error registrando usuario:', error);
       throw error;
     }
   }
@@ -141,13 +141,13 @@ export class AdminService {
    */
   async updateCredentials(uid: string, request: UpdateCredentialsRequest): Promise<void> {
     try {
-      console.log(`🔧 Actualizando credenciales del usuario: ${uid}`);
+      console.log(` Actualizando credenciales del usuario: ${uid}`);
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/${uid}/credentials`;
       await this.makeAuthRequest('PUT', url, request);
-      console.log('✅ Credenciales actualizadas exitosamente');
+      console.log(' Credenciales actualizadas exitosamente');
     } catch (error) {
-      console.error('❌ Error actualizando credenciales:', error);
+      console.error(' Error actualizando credenciales:', error);
       throw error;
     }
   }
@@ -162,9 +162,9 @@ export class AdminService {
       const url = `${baseUrl}/users/${uid}/block`;
       const request: BlockUserRequest = { disabled };
       await this.makeAuthRequest('PUT', url, request);
-      console.log(`✅ Usuario ${disabled ? 'bloqueado' : 'desbloqueado'} exitosamente`);
+      console.log(` Usuario ${disabled ? 'bloqueado' : 'desbloqueado'} exitosamente`);
     } catch (error) {
-      console.error('❌ Error bloqueando/desbloqueando usuario:', error);
+      console.error(' Error bloqueando/desbloqueando usuario:', error);
       throw error;
     }
   }
@@ -174,13 +174,13 @@ export class AdminService {
    */
   async deleteUser(uid: string): Promise<void> {
     try {
-      console.log(`🗑️ Eliminando usuario: ${uid}`);
+      console.log(` Eliminando usuario: ${uid}`);
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/${uid}`;
       await this.makeAuthRequest('DELETE', url);
-      console.log('✅ Usuario eliminado exitosamente');
+      console.log(' Usuario eliminado exitosamente');
     } catch (error) {
-      console.error('❌ Error eliminando usuario:', error);
+      console.error(' Error eliminando usuario:', error);
       throw error;
     }
   }
@@ -190,13 +190,13 @@ export class AdminService {
    */
   async requestPasswordReset(email: string): Promise<void> {
     try {
-      console.log(`🔑 Solicitando recuperación de contraseña para: ${email}`);
+      console.log(` Solicitando recuperación de contraseña para: ${email}`);
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/password-reset?email=${encodeURIComponent(email)}`;
       await this.makeAuthRequest('POST', url);
-      console.log('✅ Solicitud de recuperación enviada');
+      console.log(' Solicitud de recuperación enviada');
     } catch (error) {
-      console.error('❌ Error solicitando recuperación:', error);
+      console.error(' Error solicitando recuperación:', error);
       throw error;
     }
   }
@@ -206,12 +206,12 @@ export class AdminService {
    */
   async getAllBiometricStatus(): Promise<BiometricStatus[]> {
     try {
-      console.log('📋 Obteniendo estado biométrico de todos los usuarios...');
+      console.log(' Obteniendo estado biométrico de todos los usuarios...');
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/biometric-status`;
       return await this.makeAuthRequest('GET', url);
     } catch (error) {
-      console.error('❌ Error obteniendo estado biométrico:', error);
+      console.error(' Error obteniendo estado biométrico:', error);
       throw error;
     }
   }

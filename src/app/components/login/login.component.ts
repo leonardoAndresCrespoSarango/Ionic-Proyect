@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
    */
   async updateBiometricState() {
     try {
-      console.log('🔄 Actualizando estado biométrico...');
+      console.log(' Actualizando estado biométrico...');
 
       // Usar métodos que realmente existen en el BiometricService
       const deviceAvailable = await this.biometricService.isBiometricAvailable();
@@ -111,7 +111,7 @@ export class LoginComponent implements OnInit {
         puedeUsar: this.biometricState.canUseForLogin ? '✅' : '❌'
       });
     } catch (error) {
-      console.error('❌ Error actualizando estado biométrico:', error);
+      console.error(' Error actualizando estado biométrico:', error);
     }
   }
 
@@ -126,14 +126,14 @@ export class LoginComponent implements OnInit {
 
     try {
       const loginData = this.loginForm.value;
-      console.log('🔐 Intentando login tradicional...');
+      console.log(' Intentando login tradicional...');
 
       // Hacer login
       const response = await this.authService.login(loginData).toPromise();
 
       // Verificar si requiere TOTP
       if (response && response.totpRequired && response.tempSessionId) {
-        console.log('🔑 TOTP requerido, abriendo modal de verificación...');
+        console.log(' TOTP requerido, abriendo modal de verificación...');
         this.loading = false;
 
         // Abrir modal de verificación TOTP
@@ -150,20 +150,20 @@ export class LoginComponent implements OnInit {
         const { data } = await modal.onWillDismiss();
 
         if (data && data.success) {
-          console.log('✅ Verificación TOTP exitosa');
+          console.log(' Verificación TOTP exitosa');
           // Actualizar estado biométrico
           await this.updateBiometricState();
 
           // Verificar si debe mostrar el diálogo biométrico
           if (this.biometricState.canSaveCredentials) {
-            console.log('💡 Mostrando diálogo de configuración biométrica...');
+            console.log(' Mostrando diálogo de configuración biométrica...');
             this.pendingCredentials = {
               email: loginData.email,
               password: loginData.password
             };
             this.showBiometricDialog = true;
           } else {
-            console.log('🚀 Redirigiendo al dashboard...');
+            console.log(' Redirigiendo al dashboard...');
             this.router.navigate(['/dashboard']);
           }
         } else {
@@ -172,26 +172,26 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      console.log('✅ Login exitoso sin TOTP');
+      console.log(' Login exitoso sin TOTP');
 
       // Actualizar estado biométrico
       await this.updateBiometricState();
 
       // Verificar si debe mostrar el diálogo biométrico
       if (this.biometricState.canSaveCredentials) {
-        console.log('💡 Mostrando diálogo de configuración biométrica...');
+        console.log(' Mostrando diálogo de configuración biométrica...');
         this.pendingCredentials = {
           email: loginData.email,
           password: loginData.password
         };
         this.showBiometricDialog = true;
       } else {
-        console.log('🚀 Redirigiendo al dashboard...');
+        console.log(' Redirigiendo al dashboard...');
         this.router.navigate(['/dashboard']);
       }
 
     } catch (error: any) {
-      console.error('❌ Error en login:', error);
+      console.error(' Error en login:', error);
       this.errorMessage = error.error?.message || 'Credenciales inválidas';
     } finally {
       this.loading = false;
@@ -211,7 +211,7 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
 
     try {
-      console.log('👆 Iniciando login biométrico integrado...');
+      console.log(' Iniciando login biométrico integrado...');
 
       // Obtener credenciales con verificación biométrica
       const credentials = await this.biometricService.getCredentialsWithBiometric();
@@ -222,14 +222,14 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      console.log('🔐 Haciendo login con credenciales biométricas...');
+      console.log(' Haciendo login con credenciales biométricas...');
 
       // Hacer login con las credenciales obtenidas
       const response = await this.authService.login(credentials).toPromise();
 
       // Verificar si requiere TOTP
       if (response && response.totpRequired && response.tempSessionId) {
-        console.log('🔑 TOTP requerido después de biometría, abriendo modal...');
+        console.log(' TOTP requerido después de biometría, abriendo modal...');
         this.loading = false;
 
         // Abrir modal de verificación TOTP
@@ -246,7 +246,7 @@ export class LoginComponent implements OnInit {
         const { data } = await modal.onWillDismiss();
 
         if (data && data.success) {
-          console.log('✅ Verificación TOTP exitosa después de biometría');
+          console.log(' Verificación TOTP exitosa después de biometría');
           this.router.navigate(['/dashboard']);
         } else {
           this.errorMessage = 'Verificación TOTP cancelada';
@@ -254,11 +254,11 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      console.log('✅ Login biométrico integrado exitoso');
+      console.log(' Login biométrico integrado exitoso');
       this.router.navigate(['/dashboard']);
 
     } catch (error: any) {
-      console.error('❌ Error en login biométrico:', error);
+      console.error(' Error en login biométrico:', error);
 
       // Manejar errores específicos
       if (error.message && error.message.includes('User canceled')) {
@@ -281,7 +281,7 @@ export class LoginComponent implements OnInit {
    * Callback cuando se activa la biometría desde el diálogo
    */
   async onBiometricActivated() {
-    console.log('✅ Biometría activada desde diálogo');
+    console.log(' Biometría activada desde diálogo');
     this.showBiometricDialog = false;
     await this.updateBiometricState();
     this.router.navigate(['/dashboard']);
@@ -291,7 +291,7 @@ export class LoginComponent implements OnInit {
    * Callback cuando se cierra el diálogo sin activar
    */
   onBiometricDialogDismissed() {
-    console.log('ℹ️ Diálogo de biometría cerrado');
+    console.log(' Diálogo de biometría cerrado');
     this.showBiometricDialog = false;
     this.pendingCredentials = null;
     this.router.navigate(['/dashboard']);

@@ -43,10 +43,10 @@ export class BiometricService {
         canUseForLogin: deviceAvailable && backendEnabled && hasStoredCredentials
       };
 
-      console.log('📊 Estado biométrico completo:', state);
+      console.log(' Estado biométrico completo:', state);
       return state;
     } catch (error) {
-      console.error('❌ Error obteniendo estado biométrico:', error);
+      console.error(' Error obteniendo estado biométrico:', error);
       return {
         deviceAvailable: false,
         backendEnabled: false,
@@ -62,7 +62,7 @@ export class BiometricService {
    */
   async enableBiometrics(email: string, password: string): Promise<boolean> {
     try {
-      console.log('🔐 Activando biometría completa...');
+      console.log(' Activando biometría completa...');
 
       // 1. Verificar que el dispositivo soporte biometría
       if (!await this.isBiometricAvailable()) {
@@ -71,7 +71,7 @@ export class BiometricService {
 
       // 2. Guardar credenciales localmente (incluye verificación biométrica)
       await this.saveCredentials(email, password);
-      console.log('✅ Credenciales guardadas localmente');
+      console.log(' Credenciales guardadas localmente');
 
       // 3. Activar en el backend
       const backendUpdated = await this.authService.updateBiometricPreference(true);
@@ -81,10 +81,10 @@ export class BiometricService {
         throw new Error('Error activando biometría en el servidor');
       }
 
-      console.log('✅ Biometría activada completamente');
+      console.log(' Biometría activada completamente');
       return true;
     } catch (error) {
-      console.error('❌ Error activando biometría:', error);
+      console.error(' Error activando biometría:', error);
       throw error;
     }
   }
@@ -94,22 +94,22 @@ export class BiometricService {
    */
   async disableBiometrics(): Promise<boolean> {
     try {
-      console.log('🔒 Desactivando biometría completa...');
+      console.log(' Desactivando biometría completa...');
 
       // 1. Eliminar credenciales locales
       await this.deleteCredentials();
-      console.log('✅ Credenciales locales eliminadas');
+      console.log(' Credenciales locales eliminadas');
 
       // 2. Desactivar en el backend
       const backendUpdated = await this.authService.updateBiometricPreference(false);
       if (!backendUpdated) {
-        console.warn('⚠️ Error desactivando biometría en el servidor, pero credenciales locales eliminadas');
+        console.warn(' Error desactivando biometría en el servidor, pero credenciales locales eliminadas');
       }
 
-      console.log('✅ Biometría desactivada completamente');
+      console.log(' Biometría desactivada completamente');
       return true;
     } catch (error) {
-      console.error('❌ Error desactivando biometría:', error);
+      console.error(' Error desactivando biometría:', error);
       return false;
     }
   }
@@ -119,7 +119,7 @@ export class BiometricService {
    */
   async loginWithBiometrics(): Promise<BiometricCredentials> {
     try {
-      console.log('👆 Iniciando login biométrico completo...');
+      console.log(' Iniciando login biométrico completo...');
 
       // 1. Verificar que esté habilitado en el backend
       const backendEnabled = await this.authService.getBiometricPreferenceFromBackend();
@@ -133,10 +133,10 @@ export class BiometricService {
         throw new Error('No se encontraron credenciales guardadas');
       }
 
-      console.log('✅ Login biométrico completo exitoso');
+      console.log(' Login biométrico completo exitoso');
       return credentials;
     } catch (error) {
-      console.error('❌ Error en login biométrico:', error);
+      console.error(' Error en login biométrico:', error);
       throw error;
     }
   }
@@ -147,16 +147,16 @@ export class BiometricService {
   async isBiometricAvailable(): Promise<boolean> {
     try {
       if (this.isWeb()) {
-        console.log('🌐 Ejecutándose en web - biometría no disponible');
+        console.log(' Ejecutándose en web - biometría no disponible');
         return false;
       }
 
-      console.log('📱 Verificando biometría en dispositivo móvil...');
+      console.log(' Verificando biometría en dispositivo móvil...');
       const result = await NativeBiometric.isAvailable();
-      console.log('🔍 Resultado biometría:', result);
+      console.log(' Resultado biometría:', result);
       return result.isAvailable;
     } catch (error) {
-      console.error('❌ Error checking biometric availability:', error);
+      console.error(' Error checking biometric availability:', error);
       return false;
     }
   }
@@ -173,7 +173,7 @@ export class BiometricService {
    */
   async verifyIdentity(): Promise<boolean> {
     try {
-      console.log('👆 Iniciando verificación biométrica...');
+      console.log(' Iniciando verificación biométrica...');
 
       const result = await NativeBiometric.verifyIdentity({
         reason: 'Usa tu huella dactilar para iniciar sesión',
@@ -184,10 +184,10 @@ export class BiometricService {
         useFallback: true,
       });
 
-      console.log('✅ Verificación biométrica exitosa:', result);
+      console.log(' Verificación biométrica exitosa:', result);
       return true;
     } catch (error) {
-      console.error('❌ Error en verificación biométrica:', error);
+      console.error(' Error en verificación biométrica:', error);
       throw error;
     }
   }
@@ -197,7 +197,7 @@ export class BiometricService {
    */
   async saveCredentials(email: string, password: string): Promise<boolean> {
     try {
-      console.log('💾 Guardando credenciales biométricas...');
+      console.log(' Guardando credenciales biométricas...');
 
       // Primero verificar que la biometría funciona
       await this.verifyIdentity();
@@ -210,10 +210,10 @@ export class BiometricService {
         server: this.BIOMETRIC_CREDENTIALS_KEY,
       });
 
-      console.log('✅ Credenciales guardadas con biometría');
+      console.log(' Credenciales guardadas con biometría');
       return true;
     } catch (error) {
-      console.error('❌ Error saving biometric credentials:', error);
+      console.error(' Error saving biometric credentials:', error);
       throw error;
     }
   }
@@ -223,7 +223,7 @@ export class BiometricService {
    */
   async getCredentialsWithBiometric(): Promise<BiometricCredentials | null> {
     try {
-      console.log('🔓 Obteniendo credenciales con biometría...');
+      console.log(' Obteniendo credenciales con biometría...');
 
       // Primero verificar la identidad biométrica
       await this.verifyIdentity();
@@ -234,10 +234,10 @@ export class BiometricService {
       });
 
       const credentials: BiometricCredentials = JSON.parse(result.password);
-      console.log('✅ Credenciales obtenidas con biometría');
+      console.log(' Credenciales obtenidas con biometría');
       return credentials;
     } catch (error) {
-      console.error('❌ Error getting biometric credentials:', error);
+      console.error(' Error getting biometric credentials:', error);
       throw error;
     }
   }
@@ -259,7 +259,7 @@ export class BiometricService {
       return result !== null && result.password !== null;
     } catch (error) {
       // Si no hay credenciales o hay error, retornar false
-      console.log('📝 No hay credenciales biométricas guardadas');
+      console.log(' No hay credenciales biométricas guardadas');
       return false;
     }
   }
@@ -272,10 +272,10 @@ export class BiometricService {
       await NativeBiometric.deleteCredentials({
         server: this.BIOMETRIC_CREDENTIALS_KEY,
       });
-      console.log('🗑️ Credenciales biométricas eliminadas');
+      console.log(' Credenciales biométricas eliminadas');
       return true;
     } catch (error) {
-      console.error('❌ Error deleting biometric credentials:', error);
+      console.error(' Error deleting biometric credentials:', error);
       return false;
     }
   }

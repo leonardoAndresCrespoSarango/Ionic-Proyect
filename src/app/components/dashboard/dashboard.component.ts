@@ -112,18 +112,18 @@ export class DashboardComponent implements OnInit {
 
   async onRemoveBiometricConfirmed() {
     try {
-      console.log('🔒 Eliminando biometría desde dashboard...');
+      console.log(' Eliminando biometría desde dashboard...');
       await this.biometricService.disableBiometrics();
       await this.updateBiometricState();
-      console.log('✅ Biometría eliminada exitosamente (local + backend)');
+      console.log(' Biometría eliminada exitosamente (local + backend)');
       this.showRemoveDialog = false;
     } catch (error) {
-      console.error('❌ Error eliminando biometría:', error);
+      console.error(' Error eliminando biometría:', error);
     }
   }
 
   onRemoveDialogCancelled() {
-    console.log('ℹ️ Eliminación de biometría cancelada');
+    console.log('ℹEliminación de biometría cancelada');
     this.showRemoveDialog = false;
   }
 
@@ -139,8 +139,8 @@ export class DashboardComponent implements OnInit {
       const hasCredentials = await this.biometricService.hasStoredCredentials();
 
       if (deviceAvailable && !hasCredentials) {
-        console.log('💡 Usuario puede activar biometría, pero no hay credenciales del último login');
-        console.log('ℹ️ El diálogo biométrico se mostrará en el próximo login exitoso');
+        console.log(' Usuario puede activar biometría, pero no hay credenciales del último login');
+        console.log(' El diálogo biométrico se mostrará en el próximo login exitoso');
       }
     } catch (error) {
       console.error('Error checking biometric setup:', error);
@@ -148,13 +148,13 @@ export class DashboardComponent implements OnInit {
   }
 
   async onBiometricActivated() {
-    console.log('✅ Biometría activada desde dashboard');
+    console.log(' Biometría activada desde dashboard');
     this.showBiometricSetupDialog = false;
     await this.updateBiometricState();
   }
 
   onBiometricSetupDismissed() {
-    console.log('ℹ️ Diálogo de biometría cerrado desde dashboard');
+    console.log(' Diálogo de biometría cerrado desde dashboard');
     this.showBiometricSetupDialog = false;
   }
 

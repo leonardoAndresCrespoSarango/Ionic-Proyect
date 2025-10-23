@@ -175,10 +175,10 @@ export class AuthService {
       this.setUser(updatedUser);
       this.currentUserSubject.next(updatedUser);
 
-      console.log('✅ Preferencia biométrica actualizada en backend');
+      console.log(' Preferencia biométrica actualizada en backend');
       return true;
     } catch (error) {
-      console.error('❌ Error actualizando preferencia biométrica:', error);
+      console.error(' Error actualizando preferencia biométrica:', error);
       return false;
     }
   }
@@ -198,10 +198,10 @@ export class AuthService {
         `${this.API_URL.replace('/users', '')}/users/${user.uid}/biometric`
       );
 
-      console.log(`📋 Preferencia biométrica del backend: ${response.enabled}`);
+      console.log(` Preferencia biométrica del backend: ${response.enabled}`);
       return response.enabled;
     } catch (error) {
-      console.error('❌ Error obteniendo preferencia biométrica:', error);
+      console.error(' Error obteniendo preferencia biométrica:', error);
       return false;
     }
   }
@@ -223,7 +223,7 @@ export class AuthService {
         false // Se actualizará después
       ]);
 
-      console.log(`🔄 Estado biométrico sincronizado:`, {
+      console.log(` Estado biométrico sincronizado:`, {
         deviceAvailable,
         backendEnabled,
         hasCredentials
@@ -231,7 +231,7 @@ export class AuthService {
 
       return { deviceAvailable, backendEnabled, hasCredentials };
     } catch (error) {
-      console.error('❌ Error sincronizando estado biométrico:', error);
+      console.error(' Error sincronizando estado biométrico:', error);
       return { deviceAvailable: false, backendEnabled: false, hasCredentials: false };
     }
   }
@@ -247,7 +247,7 @@ export class AuthService {
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/totp/setup`;
 
-      console.log('🔐 Iniciando configuración TOTP...');
+      console.log(' Iniciando configuración TOTP...');
 
       if (this.isMobile()) {
         const options: HttpOptions = {
@@ -264,7 +264,7 @@ export class AuthService {
         return await this.http.post<TotpSetupResponse>(url, {}).toPromise() as TotpSetupResponse;
       }
     } catch (error) {
-      console.error('❌ Error configurando TOTP:', error);
+      console.error(' Error configurando TOTP:', error);
       throw error;
     }
   }
@@ -278,7 +278,7 @@ export class AuthService {
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/totp/verify`;
 
-      console.log('✅ Verificando código TOTP...');
+      console.log(' Verificando código TOTP...');
 
       const request: TotpVerifyRequest = { code };
 
@@ -317,7 +317,7 @@ export class AuthService {
         return response;
       }
     } catch (error) {
-      console.error('❌ Error verificando TOTP:', error);
+      console.error(' Error verificando TOTP:', error);
       throw error;
     }
   }
@@ -331,7 +331,7 @@ export class AuthService {
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/totp/disable`;
 
-      console.log('🔓 Deshabilitando TOTP...');
+      console.log(' Deshabilitando TOTP...');
 
       const request: TotpVerifyRequest = { code };
 
@@ -370,7 +370,7 @@ export class AuthService {
         return response;
       }
     } catch (error) {
-      console.error('❌ Error deshabilitando TOTP:', error);
+      console.error(' Error deshabilitando TOTP:', error);
       throw error;
     }
   }
@@ -383,7 +383,7 @@ export class AuthService {
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/login/totp?uid=${uid}`;
 
-      console.log('🔑 Verificando código TOTP para login...');
+      console.log(' Verificando código TOTP para login...');
 
       const request: TotpLoginRequest = { code };
 
@@ -411,12 +411,12 @@ export class AuthService {
         this.currentUserSubject.next(response.user);
         this.isAuthenticatedSubject.next(true);
         this.isLoggingOut = false;
-        console.log('✅ Login con TOTP exitoso');
+        console.log(' Login con TOTP exitoso');
       }
 
       return response;
     } catch (error) {
-      console.error('❌ Error en login con TOTP:', error);
+      console.error(' Error en login con TOTP:', error);
       throw error;
     }
   }
@@ -430,7 +430,7 @@ export class AuthService {
       const baseUrl = this.API_URL.replace('/users', '');
       const url = `${baseUrl}/users/totp/status`;
 
-      console.log('📋 Obteniendo estado TOTP...');
+      console.log(' Obteniendo estado TOTP...');
 
       if (this.isMobile()) {
         const options: HttpOptions = {
@@ -447,7 +447,7 @@ export class AuthService {
         return await this.http.get<TotpStatusResponse>(url).toPromise() as TotpStatusResponse;
       }
     } catch (error) {
-      console.error('❌ Error obteniendo estado TOTP:', error);
+      console.error(' Error obteniendo estado TOTP:', error);
       throw error;
     }
   }

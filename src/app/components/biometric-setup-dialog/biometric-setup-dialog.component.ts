@@ -69,13 +69,13 @@ export class BiometricSetupDialogComponent {
 
   async onActivate() {
     if (!this.userCredentials) {
-      console.error('❌ No se encontraron credenciales para configurar biometría');
+      console.error(' No se encontraron credenciales para configurar biometría');
       this.onDismiss();
       return;
     }
 
     try {
-      console.log('🔐 Activando biometría desde diálogo...');
+      console.log(' Activando biometría desde diálogo...');
 
       // Usar enableBiometrics que guarda localmente Y actualiza el backend
       await this.biometricService.enableBiometrics(
@@ -83,12 +83,12 @@ export class BiometricSetupDialogComponent {
         this.userCredentials.password
       );
 
-      console.log('✅ Biometría activada exitosamente desde diálogo (local + backend)');
+      console.log(' Biometría activada exitosamente desde diálogo (local + backend)');
       this.biometricActivated.emit();
       this.onDismiss();
 
     } catch (error: any) {
-      console.error('❌ Error activando biometría desde diálogo:', error);
+      console.error(' Error activando biometría desde diálogo:', error);
 
       // Mostrar error al usuario
       const errorAlert = await this.alertController.create({
@@ -104,7 +104,7 @@ export class BiometricSetupDialogComponent {
   }
 
   onSkip() {
-    console.log('ℹ️ Usuario omitió configuración biométrica');
+    console.log('ℹ Usuario omitió configuración biométrica');
     this.dialogDismissed.emit();
     this.onDismiss();
   }
