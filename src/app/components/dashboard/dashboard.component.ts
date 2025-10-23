@@ -17,7 +17,7 @@ import {
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward, peopleOutline } from 'ionicons/icons';
+import { menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward, peopleOutline, shieldCheckmark } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { BiometricService } from '../../services/biometric.service';
 import { RemoveBiometricDialogComponent } from '../remove-biometric-dialog/remove-biometric-dialog.component';
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
   pendingCredentials: { email: string; password: string } | null = null;
 
   constructor() {
-    addIcons({ menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward, peopleOutline });
+    addIcons({ menu, ellipsisVertical, person, fingerPrint, logOut, chevronBack, chevronForward, peopleOutline, shieldCheckmark });
   }
 
   async ngOnInit() {
@@ -166,7 +166,12 @@ export class DashboardComponent implements OnInit {
    * Abrir modal de configuración TOTP
    */
   async openTotpSetup() {
-    await this.popoverController.dismiss();
+    // Si venimos desde el popover, lo cerramos; en otros contextos puede no existir
+    try {
+      await this.popoverController.dismiss();
+    } catch {
+      // No hay popover activo, continuar sin bloquear la acción
+    }
 
     const modal = await this.modalController.create({
       component: TotpSetupComponent,

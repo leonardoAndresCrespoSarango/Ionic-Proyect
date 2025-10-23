@@ -22,6 +22,11 @@
         <ion-icon name="people-outline"></ion-icon>
         <span *ngIf="!sidebarCollapsed" class="menu-label">Administrar Usuarios</span>
       </div>
+
+      <div class="menu-item" (click)="openTotpSetup()">
+        <ion-icon name="shield-checkmark"></ion-icon>
+        <span *ngIf="!sidebarCollapsed" class="menu-label">Autenticación 2FA</span>
+      </div>
     </div>
   </div>
 

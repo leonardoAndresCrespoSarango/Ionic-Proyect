@@ -124,6 +124,23 @@
           "options": {
             "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
+        },
+        "compodoc": {
+          "builder": "@compodoc/compodoc:compodoc",
+          "options": {
+            "tsconfig": "tsconfig.app.json",
+            "output": "documentation"
+          },
+          "configurations": {
+            "serve": {
+              "tsconfig": "tsconfig.app.json",
+              "output": "documentation",
+              "watch": true,
+              "serve": true,
+              "port": 8080,
+              "open": true
+            }
+          }
         }
       }
     }
