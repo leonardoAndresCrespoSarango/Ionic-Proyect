@@ -18,11 +18,17 @@ export const authInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>
   ];
 
   const token = authService.getToken();
+  const headers: { [key: string]: string } = {
+    'ngrok-skip-browser-warning': 'true'
+  };
+
   if (token) {
-    request = request.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    });
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  request = request.clone({
+    setHeaders: headers
+  });
 
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -37,4 +43,3 @@ export const authInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>
     })
   );
 };
-

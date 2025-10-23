@@ -52,13 +52,19 @@ export class AdminService {
     const token = this.getToken();
 
     if (this.isMobile()) {
+      const headers: { [key: string]: string } = {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const options: HttpOptions = {
         url,
         method: method as any,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers,
         data: data ? JSON.stringify(data) : undefined
       };
       const response = await CapacitorHttp.request(options);
@@ -216,4 +222,3 @@ export class AdminService {
     }
   }
 }
-

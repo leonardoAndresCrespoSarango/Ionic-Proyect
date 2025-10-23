@@ -41,7 +41,8 @@ export class AuthService {
         url,
         method: method as any,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
         },
         data: data ? JSON.stringify(data) : undefined
       };
@@ -104,6 +105,7 @@ export class AuthService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
             'Authorization': `Bearer ${token}` //  INCLUIR EL TOKEN
           },
           data: {} // Body vacío pero headers con token
@@ -192,6 +194,7 @@ export class AuthService {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
             'Authorization': `Bearer ${token}`
           },
           data: request
@@ -287,6 +290,7 @@ export class AuthService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
             'Authorization': `Bearer ${token}`
           }
         };
@@ -320,6 +324,7 @@ export class AuthService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
             'Authorization': `Bearer ${token}`
           },
           data: request
@@ -373,6 +378,7 @@ export class AuthService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
             'Authorization': `Bearer ${token}`
           },
           data: request
@@ -426,7 +432,8 @@ export class AuthService {
           url,
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
           },
           data: request
         };
@@ -470,6 +477,7 @@ export class AuthService {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
             'Authorization': `Bearer ${token}`
           }
         };
